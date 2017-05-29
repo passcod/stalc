@@ -202,3 +202,83 @@ text.
 Spanning multiple
 lines." pop
 ```
+
+## Commands
+
+Simple command words:
+
+(The rules for what can be a symbol and what can't are TBC, but Unicode is supported.)
+
+```
+print
+stack
+pop
++
+-
+/
+*
+Σ
+```
+
+Commands have a fixed arity (number of values they pop off the stack):
+
+```
+123 print // valid
+print // error (not enough values to pop)
+123 456 print // valid, only prints 456
+
+1 2 + // valid
+1 + // error (not enough values to pop)
+1 2 3 + // valid, only adds 2 and 3 together
+```
+
+Commands can call themselves, and can use that to simulate variable arity,
+e.g. for the `sum` command.
+
+```
+1 2 3 4 5 6 7 8 9
+9 sum
+=> 45
+```
+
+The `sum` commands works like this: (pseudocode)
+
+```
+Arity: 2
+
+// Pop arguments
+N = first pop
+Input = second pop
+
+// Accumulator
+internalval ||= 0
+internalval += Input
+
+if N < 2
+  // Finish
+  push(internalval)
+else
+  // Push back
+  push(N - 1)
+  sum
+end
+```
+
+So step by step:
+
+```
+1 2 3                           Stack: [3 2 1]
+3                               Stack: [3 3 2 1]
+
+sum (pop arguments)             Stack: [2 1]       N: 3   Input: 3   Internalval: 0
+sum (accumulator)               Stack: [2 1]       N: 3   Input: 3   Internalval: 3
+sum (push back)                 Stack: [2 2 1]     N: 3   Input: 3   Internalval: 3
+
+sum (pop arguments)             Stack: [2 2 1]     N: 2   Input: 2   Internalval: 3
+sum (accumulator)               Stack: [1]         N: 2   Input: 2   Internalval: 5
+sum (push back)                 Stack: [1 1]       N: 2   Input: 2   Internalval: 5
+
+sum (pop arguments)             Stack: [1 1]       N: 1   Input: 1   Internalval: 5
+sum (accumulator)               Stack: []          N: 1   Input: 1   Internalval: 6
+sum (finish)                    Stack: [6]         N: 1   Input: 1   Internalval: 6
+```
