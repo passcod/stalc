@@ -207,7 +207,8 @@ lines." pop
 
 Simple command words:
 
-(The rules for what can be a symbol and what can't are TBC, but Unicode is supported.)
+(The rules for what can be a symbol and what can't are TBC, but Unicode is
+supported.)
 
 ```
 print
@@ -232,8 +233,8 @@ print // error (not enough values to pop)
 1 2 3 + // valid, only adds 2 and 3 together
 ```
 
-Commands can call themselves, and can use that to simulate variable arity,
-e.g. for the `sum` command.
+Commands can call themselves, and can use that to simulate variable arity, e.g.
+for the `sum` command.
 
 ```
 1 2 3 4 5 6 7 8 9
@@ -282,3 +283,35 @@ sum (pop arguments)             Stack: [1 1]       N: 1   Input: 1   Internalval
 sum (accumulator)               Stack: []          N: 1   Input: 1   Internalval: 6
 sum (finish)                    Stack: [6]         N: 1   Input: 1   Internalval: 6
 ```
+
+### Argument syntax
+
+For convenience, if a command word is immediately (without whitespace
+separator) followed by `([arguments])`, where `[arguments]` is a set of zero or
+more values separated by whitespace, these arguments are passed to the command,
+taking priority over the stack. The behaviour can be _thought of_ as pushing
+the arguments onto the stack in reverse and then calling the command, but keep
+in mind that the syntax does not _actually_ affect the stack directly (i.e. the
+values are always passed directly to the command).
+
+For example, the `sum` command can be called like this:
+
+```
+1 1 2 3 5 8 13
+sum(7)
+=> 34
+
+// Or even:
+1 2 sum(3 17)
+=> 20
+```
+
+The first invocation makes it a bit easier to see that `7` is different from
+the numbers to be summed, so it adds clarity. However, the second form confuses
+the invocation and is much harder to understand. Thus, while there are many
+ways to invoke commands using combinations of those two syntaxes, the
+documentation will generally prefer the one which makes most sense.
+
+Note that a command cannot be invoked with more arguments than it has arity,
+but it can be invoked with less (and will then take the remainder from the
+stack).
