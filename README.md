@@ -393,3 +393,117 @@ sum(4)                          Stack: []      (sum(4 10) applies, calls sum(3),
 30                              Stack: []      (sum(2 30) applies, calls sum(1), which waits)
 40                              Stack: [100]   (sum(1 40) applies, pushes result to the stack)
 ```
+
+## Progress
+
+### Spec
+
+- Syntax:
+  + [x] Separator: Unicode whitespace class
+  + [ ] Commands: valid names
+  + [x] Commands: arguments
+  + [ ] Commands: definitions
+  + [x] Modes: reverse
+  + [x] Modes: polish
+  + [x] Modes: infix
+  + [ ] Modes: terse
+  + [ ] Modes: terse, dc-compatible
+  + [ ] Ecosystem: import
+  + [ ] Ecosystem: export
+  + [ ] Variables: global
+  + [ ] Variables: scoped
+  + [ ] Variables: command-internal
+- Inputs:
+  + [x] Integers: natural
+  + [x] Integers: signed
+  + [x] Decimals: natural + signed
+  + [x] Decimals: without leading zero
+  + [x] Exponential notation
+  + [x] Complex numbers
+  + [x] Complex numbers: short form, signed
+  + [x] Complex numbers: short form, unsigned
+  + [x] Dates: YYYY-MM-DD
+  + [x] Dates: YYYY-WNN-N
+  + [x] Dates: YYYY-WNN
+  + [x] Dates: YYYY-OOO
+  + [ ] Dates: YY-MM-DD ?
+  + [ ] Dates: Non-ISO ?
+  + [ ] Dates: ISO short form ?
+  + [x] Times: HH:MM:SS
+  + [x] Times: MM:SS
+  + [x] Times: MM:SS (with MM > 59)
+  + [x] Times: HH:MM:SS (with HH > 23)
+  + [ ] Times: signed
+  + [x] Times: with decimal seconds
+  + [x] Times: are also durations
+  + [ ] Times: seconds short form (:SS)
+  + [ ] Times: seconds short form with decimals
+  + [ ] Times: seconds short form with SS > 59
+  + [x] Datetimes: (any date format)T(any time format within time bounds)
+  + [x] Datetimes: with numeric timezone
+  + [ ] Datetimes: with lettered timezone ?
+  + [x] ISO Durations: full form
+  + [x] ISO Durations: short form
+  + [ ] ISO Durations: signed
+  + [x] ISO Durations: datetime form
+  + [ ] ISO Durations: datetime form, signed
+  + [x] Bases: NNN_B
+  + [x] Bases: bases under 37 are case-insensitive
+  + [x] Bases: bases 37 and over are case-sensitive
+  + [x] Bases: maximum radix is 64
+  + [x] Bases: unofficial radix-1 using `1` as the single digit
+  + [ ] Bases: with non-Western numerals
+  + [ ] Bases: as part of composite inputs e.g. complex numbers, dates/times
+  + [ ] Bases: higher than 64
+  + [ ] Bases: negative
+  + [ ] Bases: non-integer
+  + [ ] Bases: complex
+  + [x] Numerals: Western (0 1 2 3 4 5 6 7 8 9)
+  + [ ] Numerals: Arabic (٩ ٨ ٧ ٦ ٥ ٤ ٣ ٢ ١ ٠) (RTL)
+  + [ ] Numerals: Hebrew (א ב ג ד ה ו ז ח ט) (RTL, non-zero, quasi-decimal)
+  + [x] Numerals: Devanagari (0 १ २ ३ ४ ५ ६ ७ ८ ९)
+  + [ ] Numerals: Tamil (௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯) (quasi-decimal)
+  + [ ] Numerals: Greek (ō α β γ δ ε ϝ ζ η θ ι) (quasi-decimal, possible conflicts with commands)
+  + [x] Numerals: Roman (specced as only supported through string parsing)
+  + [ ] Numerals: Sino-Korean (〇 一 二 三 四 五 六 七 八 九 十) (quasi-decimal, alternate zero 零, RTL?)
+  + [x] Numerals: Burmese (၀ ၁ ၂ ၃ ၄ ၅ ၆ ၇ ၈ ၉)
+  + [ ] Numerals: Others (Thai, Khmer, Abjad, ...)
+  + [x] Strings: on one line
+  + [x] Strings: multiline
+  + [x] Strings: quote escape
+  + [x] Strings: backslash escape
+  + [ ] Strings: Unicode escapes
+  + [x] Comments: whole line
+  + [x] Comments: partial line
+  + [x] Comments: multiline (through strings)
+- Commands:
+  + [ ] Core (native impl)
+  + [ ] Stdlib (written in Stalc)
+  + [ ] Stdlib (optimised versions)
+  + [ ] Types: inputs
+  + [ ] Types: outputs
+- Stdlib:
+  + [x] sum
+  + [x] roman
+  + [ ] convert
+  + [ ] solve
+  + [ ] ???
+- Registers:
+  + [ ] ???
+- Shell features:
+  + [ ] History: whole line lookup
+  + [ ] History: prefix lookup
+  + [ ] History: partial lookup
+  + [ ] History: persistent
+  + [ ] Inspect: stack
+  + [ ] Inspect: waiting commands
+  + [ ] Inspect: trace
+  + [ ] ???
+- Precision:
+  + [ ] Set/get
+  + [ ] Auto
+- Platforms:
+  + [x] First-tier (dev): Linux 64-bit
+  + [x] Second-tier (CI): OS X, Windows 64-bit
+  + [ ] Third-tier: BSD? ARM? 32-bit?
+  + [ ] Fourth-tier: untested
