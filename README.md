@@ -67,11 +67,10 @@ $ stalc --help
 ## Usage
 
 Stalc is a whitespace-separated language, so most whitespace is not
-significant and ignored, whether it be spaces, tabs, newlines, etc.
-
-Stalc is stack-based, so inputs are pushed on top of a stack, and commands pop
-one or more inputs, perform some computation and/or side-effects, and push zero
-or more inputs back onto the stack.
+significant and ignored, whether it be spaces, tabs, newlines, etc. Stalc is
+stack-based, so inputs are pushed on top of a stack, and commands pop one or
+more inputs, perform some computation and/or side-effects, and push zero or
+more inputs back onto the stack.
 
 ### Inputs
 
@@ -315,3 +314,82 @@ documentation will generally prefer the one which makes most sense.
 Note that a command cannot be invoked with more arguments than it has arity,
 but it can be invoked with less (and will then take the remainder from the
 stack).
+
+With this, `sum` can be reimplemented like thus, so that the N value is never
+pushed back to the stack, and only the final result is:
+
+```
+N = first pop
+Input = second pop
+
+internalval ||= 0
+internalval += Input
+
+if N < 2
+  push(internalval)
+else
+  sum(N - 1)
+end
+```
+
+### Prefix (polish) and "infix" syntax modes
+
+The way these work is by enabling different modes of delayed application to
+commands. Given commands have a fixed arity, Stalc can take a subset of the
+command's inputs from the stack, and then "wait" for more before applying the
+command.
+
+In polish mode, Stalc takes _none_ from the stack and then "waits" for more. In
+infix mode, Stalc takes _one_ from the stack and then "waits". Argument syntax
+still takes precedence.
+
+Polish / Prefix mode:
+
+```
+                                Stack: []        Commands: (arity | inputs so far): []
+10                              Stack: [10]      Commands: []
++                               Stack: [10]      Commands: [+ (2 | 0)]
+40                              Stack: [10]      Commands: [+ (2 | 1)]
+50   (before + applies)         Stack: [10]      Commands: [+ (2 | 2)]
+     (after + applies)          Stack: [90 10]   Commands: []
+
+// With argument syntax:
+
++(5)                            Stack: []        Commands: [+ (2 | 1)]
+10   (before + applies)         Stack: []        Commands: [+ (2 | 2)]
+     (after + applies)          Stack: [15]      Commands: []
+
+// With argument syntax and a recursive function (not showing command stack/state):
+// Remember that sum() has arity = 2.
+
+sum(4)                          Stack: []      (sum() is waiting on a value)
+10                              Stack: []      (sum(4 10) applies, calls sum(3), which waits)
+20                              Stack: []      (sum(3 20) applies, calls sum(2), which waits)
+30                              Stack: []      (sum(2 30) applies, calls sum(1), which waits)
+40                              Stack: [100]   (sum(1 40) applies, pushes result to the stack)
+```
+
+"Infix" mode:
+
+```
+                                Stack: []        Commands: (arity | inputs so far): []
+10                              Stack: [10]      Commands: []
++                               Stack: []        Commands: [+ (2 | 1)]
+50   (before + applies)         Stack: []        Commands: [+ (2 | 2)]
+     (after + applies)          Stack: [60]      Commands: []
+
+// With argument syntax:
+
+10                              Stack: [10]      Commands: []
++(5) (before + applies)         Stack: []        Commands: [+ (2 | 2)]
+     (after + applies)          Stack: [15]      Commands: []
+
+// With argument syntax and a recursive function (not showing command stack/state):
+// Remember that sum() has arity = 2.
+
+10                              Stack: [10]
+sum(4)                          Stack: []      (sum(4 10) applies, calls sum(3), which waits)
+20                              Stack: []      (sum(3 20) applies, calls sum(2), which waits)
+30                              Stack: []      (sum(2 30) applies, calls sum(1), which waits)
+40                              Stack: [100]   (sum(1 40) applies, pushes result to the stack)
+```
