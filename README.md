@@ -426,11 +426,13 @@ unset("pi")
 isset("pi") //=> false
 ```
 
-## Progress
+## Progress and plans
 
-### Spec
+### Basics (0.0)
 
-- Syntax:
+State: Spec
+
+- Big picture:
   + [x] Separator: Unicode whitespace class
   + [ ] Commands: valid names
   + [x] Commands: arguments
@@ -438,10 +440,6 @@ isset("pi") //=> false
   + [x] Modes: reverse
   + [x] Modes: polish
   + [x] Modes: infix
-  + [ ] Modes: terse
-  + [ ] Modes: terse, dc-compatible
-  + [ ] Ecosystem: import
-  + [ ] Ecosystem: export
 - Inputs:
   + [x] Integers: natural
   + [x] Integers: signed
@@ -452,12 +450,6 @@ isset("pi") //=> false
   + [x] Complex numbers: short form, signed
   + [x] Complex numbers: short form, unsigned
   + [x] Dates: YYYY-MM-DD
-  + [x] Dates: YYYY-WNN-N
-  + [x] Dates: YYYY-WNN
-  + [x] Dates: YYYY-OOO
-  + [ ] Dates: YY-MM-DD ?
-  + [ ] Dates: Non-ISO ?
-  + [ ] Dates: ISO short form ?
   + [x] Times: HH:MM:SS
   + [x] Times: MM:SS
   + [x] Times: MM:SS (with MM > 59)
@@ -465,12 +457,8 @@ isset("pi") //=> false
   + [ ] Times: signed
   + [x] Times: with decimal seconds
   + [x] Times: are also durations
-  + [ ] Times: seconds short form (:SS)
-  + [ ] Times: seconds short form with decimals
-  + [ ] Times: seconds short form with SS > 59
   + [x] Datetimes: (any date format)T(any time format within time bounds)
   + [x] Datetimes: with numeric timezone
-  + [ ] Datetimes: with lettered timezone ?
   + [x] ISO Durations: full form
   + [x] ISO Durations: short form
   + [ ] ISO Durations: signed
@@ -481,27 +469,11 @@ isset("pi") //=> false
   + [x] Bases: bases 37 and over are case-sensitive
   + [x] Bases: maximum radix is 64
   + [x] Bases: unofficial radix-1 using `1` as the single digit
-  + [ ] Bases: with non-Western numerals
-  + [ ] Bases: as part of composite inputs e.g. complex numbers, dates/times
-  + [ ] Bases: higher than 64
-  + [ ] Bases: negative
-  + [ ] Bases: non-integer
-  + [ ] Bases: complex
   + [x] Numerals: Western (0 1 2 3 4 5 6 7 8 9)
-  + [ ] Numerals: Arabic (٩ ٨ ٧ ٦ ٥ ٤ ٣ ٢ ١ ٠) (RTL)
-  + [ ] Numerals: Hebrew (א ב ג ד ה ו ז ח ט) (RTL, non-zero, quasi-decimal)
-  + [x] Numerals: Devanagari (0 १ २ ३ ४ ५ ६ ७ ८ ९)
-  + [ ] Numerals: Tamil (௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯) (quasi-decimal)
-  + [ ] Numerals: Greek (ō α β γ δ ε ϝ ζ η θ ι) (quasi-decimal, possible conflicts with commands)
-  + [x] Numerals: Roman (specced as only supported through string parsing)
-  + [ ] Numerals: Sino-Korean (〇 一 二 三 四 五 六 七 八 九 十) (quasi-decimal, alternate zero 零, RTL?)
-  + [x] Numerals: Burmese (၀ ၁ ၂ ၃ ၄ ၅ ၆ ၇ ၈ ၉)
-  + [ ] Numerals: Others (Thai, Khmer, Abjad, ...)
   + [x] Strings: on one line
   + [x] Strings: multiline
   + [x] Strings: quote escape
   + [x] Strings: backslash escape
-  + [ ] Strings: Unicode escapes
   + [x] Comments: whole line
   + [x] Comments: partial line
   + [x] Comments: multiline (through strings)
@@ -509,13 +481,10 @@ isset("pi") //=> false
 - Commands:
   + [ ] Core (native impl)
   + [ ] Stdlib (written in Stalc)
-  + [ ] Stdlib (optimised versions)
   + [ ] Types
   + [ ] Types: of inputs
   + [ ] Types: of outputs
   + [x] Variables: global
-  + [ ] Variables: scoped
-  + [ ] Variables: command-internal
 - Core:
   + [x] `push<any> -> any` (does nothing when used on a stack directly)
   + [x] `pop<any> -> nil` (discards the value)
@@ -528,8 +497,6 @@ isset("pi") //=> false
   + [ ] `concat<string, string> -> string`
   + [ ] `format<string, any> -> string`
   + [ ] `if<bool, any, any> -> any` (alias `?`)
-  + [ ] `cast<any, string> -> any` (alias `::`)
-  + [ ] `typeof<any> -> string`
   + [x] `print<any> -> nil`
   + [ ] `equal<any, any> -> bool` (alias `==`)
   + [ ] `not<bool> -> bool` (alias `!`)
@@ -543,26 +510,118 @@ isset("pi") //=> false
   + [x] `unset<string>`
 - Stdlib:
   + [x] `sum<num, num> -> num`
-  + [x] `roman<num | string> -> num | string`
-  + [ ] convert
-  + [ ] solve
-  + [ ] ???
-- Registers:
-  + [ ] ???
 - Shell features:
-  + [ ] History: whole line lookup
-  + [ ] History: prefix lookup
-  + [ ] History: partial lookup
-  + [ ] History: persistent
   + [ ] Inspect: stack
   + [ ] Inspect: waiting commands
   + [ ] Inspect: trace
-  + [ ] ???
 - Precision:
   + [ ] Set/get
-  + [ ] Auto
 - Platforms:
   + [x] First-tier (dev): Linux 64-bit
-  + [x] Second-tier (CI): OS X, Windows 64-bit
+
+### Useful extras (0.1)
+
+State: Predraft
+
+- Big picture:
+  + [ ] Modes: terse
+- Inputs:
+  + [x] Dates: YYYY-WNN-N
+  + [x] Dates: YYYY-WNN
+  + [x] Dates: YYYY-OOO
+  + [ ] Times: seconds short form (:SS)
+  + [ ] Times: seconds short form with decimals
+  + [ ] Times: seconds short form with SS > 59
+  + [ ] Bases: as part of composite inputs e.g. complex numbers, dates/times
+  + [ ] Numerals: Roman (specced as only supported through string parsing)
+  + [ ] Strings: Unicode escapes
+- Commands:
+  + [ ] Variables: command-internal
+- Stdlib:
+  + [x] `roman<num | string> -> num | string`
+- Shell features:
+  + [ ] History: whole line lookup
+
+### Types (0.2)
+
+State: Predraft
+
+- Commands:
+  + [ ] Types
+  + [ ] Types: of inputs
+  + [ ] Types: of outputs
+- Core:
+  + [ ] `cast<any, string> -> any` (alias `::`)
+  + [ ] `typeof<any> -> string`
+- Stdlib:
+  + [ ] `to_num`
+  + [ ] `to_string`
+  + [ ] `to_bool`
+  + [ ] `to_date`
+  + [ ] `to_time`
+
+### History (0.3)
+
+State: Predraft
+
+- Shell features:
+  + [ ] History: prefix lookup
+  + [ ] History: partial lookup
+  + [ ] History: persistent
+
+### Numerals, part I (0.4)
+
+State: Predraft
+
+- Inputs:
+  + [ ] Bases: with non-Western numerals
+  + [ ] Numerals: Devanagari (0 १ २ ३ ४ ५ ६ ७ ८ ९)
+  + [ ] Numerals: Burmese (၀ ၁ ၂ ၃ ၄ ၅ ၆ ၇ ၈ ၉)
+
+### Advanced Bases (0.5)
+
+State: Predraft
+
+- Inputs:
+  + [ ] Bases: higher than 64
+  + [ ] Bases: negative
+  + [ ] Bases: non-integer
+  + [ ] Bases: complex
+
+### Import/Export (0.6)
+
+State: Predraft
+
+- Big picture:
+  + [ ] Ecosystem: import
+  + [ ] Ecosystem: export
+
+### Further along
+
+- Big picture:
+  + [ ] Modes: terse, dc-compatible
+  + [ ] Multiple stacks (registers)
+- Inputs:
+  + [ ] Dates: YY-MM-DD ?
+  + [ ] Dates: Non-ISO ?
+  + [ ] Dates: ISO short form ?
+  + [ ] Datetimes: with lettered timezone ?
+  + [ ] Numerals: Arabic (٩ ٨ ٧ ٦ ٥ ٤ ٣ ٢ ١ ٠) (RTL)
+  + [ ] Numerals: Hebrew (א ב ג ד ה ו ז ח ט) (RTL, non-zero, quasi-decimal)
+  + [ ] Numerals: Tamil (௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯) (quasi-decimal)
+  + [ ] Numerals: Greek (ō α β γ δ ε ϝ ζ η θ ι) (quasi-decimal, possible conflicts with commands)
+  + [ ] Numerals: Sino-Korean (〇 一 二 三 四 五 六 七 八 九 十) (quasi-decimal, alternate zero 零, RTL?)
+  + [ ] Numerals: Others (Thai, Khmer, Abjad, ...)
+- Commands:
+  + [ ] Stdlib (optimised versions)
+  + [ ] Variables: scoped
+- Stdlib:
+  + [ ] convert
+  + [ ] solve
+- Precision:
+  + [ ] Auto
+- Platforms:
+  + [ ] Second-tier (CI): OS X, Windows 64-bit
   + [ ] Third-tier: BSD? ARM? 32-bit?
   + [ ] Fourth-tier: untested
+
