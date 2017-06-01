@@ -164,7 +164,18 @@ string."
 "Another with \\ a slash."
 ```
 
+Booleans:
+
+```
+true
+false
+```
+
 Non-Western numerals (can be substituted in all forms above):
+
+(Most of these are not likely to be implemented early on due to syntax and
+semantics of RTL reading order and various features of numeral systems not
+being defined yet.)
 
 ```
 1409 // For reference
@@ -206,8 +217,10 @@ lines." pop
 
 Simple command words:
 
-(The rules for what can be a symbol and what can't are TBC, but Unicode is
-supported.)
+(The rules for what can be a symbol and what can't are not formally defined
+yet, but as a general guideline: anything that can be interpreted as an
+**input** cannot be a command, which includes all digits; anything else except
+non-printable characters and whitespace can be.)
 
 ```
 print
@@ -394,6 +407,25 @@ sum(4)                          Stack: []      (sum(4 10) applies, calls sum(3),
 40                              Stack: [100]   (sum(1 40) applies, pushes result to the stack)
 ```
 
+In most documentation, the default Reverse Polish mode is used, unless explicitely specified.
+
+### Variables
+
+```
+// Storing a value in a variable
+3.14159 =:("pi")
+-1 sqrt set("i")
+
+// Retrieving the value of a variable
+:>("i") print
+7 ^(2) get("pi") *
+
+// Some more tools:
+isset("pi") //=> true
+unset("pi")
+isset("pi") //=> false
+```
+
 ## Progress
 
 ### Spec
@@ -410,9 +442,6 @@ sum(4)                          Stack: []      (sum(4 10) applies, calls sum(3),
   + [ ] Modes: terse, dc-compatible
   + [ ] Ecosystem: import
   + [ ] Ecosystem: export
-  + [ ] Variables: global
-  + [ ] Variables: scoped
-  + [ ] Variables: command-internal
 - Inputs:
   + [x] Integers: natural
   + [x] Integers: signed
@@ -476,15 +505,45 @@ sum(4)                          Stack: []      (sum(4 10) applies, calls sum(3),
   + [x] Comments: whole line
   + [x] Comments: partial line
   + [x] Comments: multiline (through strings)
+  + [x] Booleans
 - Commands:
   + [ ] Core (native impl)
   + [ ] Stdlib (written in Stalc)
   + [ ] Stdlib (optimised versions)
-  + [ ] Types: inputs
-  + [ ] Types: outputs
+  + [ ] Types
+  + [ ] Types: of inputs
+  + [ ] Types: of outputs
+  + [x] Variables: global
+  + [ ] Variables: scoped
+  + [ ] Variables: command-internal
+- Core:
+  + [x] `push<any> -> any` (does nothing when used on a stack directly)
+  + [x] `pop<any> -> nil` (discards the value)
+  + [x] `plus<num, num> -> num` (alias `+`)
+  + [x] `minus<num, num> -> num` (alias `-`)
+  + [x] `divise<num, num> -> num` (alias `/`)
+  + [x] `multiply<num, num> -> num` (alias `*`, `×`)
+  + [x] `power<num, num> -> num` (alias `^`)
+  + [x] `sqrt<num, num> -> num` (alias `√`)
+  + [ ] `concat<string, string> -> string`
+  + [ ] `format<string, any> -> string`
+  + [ ] `if<bool, any, any> -> any` (alias `?`)
+  + [ ] `cast<any, string> -> any` (alias `::`)
+  + [ ] `typeof<any> -> string`
+  + [x] `print<any> -> nil`
+  + [ ] `equal<any, any> -> bool` (alias `==`)
+  + [ ] `not<bool> -> bool` (alias `!`)
+  + [ ] `lessthan<num, num> -> bool` (alias `<`)
+  + [ ] `and<bool, bool> -> bool` (alias `&&`)
+  + [ ] `or<bool, bool> -> bool` (alias `||`)
+  + [ ] `alias<string, string>`
+  + [x] `set<any, string>` (alias `=:`)
+  + [x] `get<string> -> any` (alias `:>`)
+  + [x] `isset<string> -> bool`
+  + [x] `unset<string>`
 - Stdlib:
-  + [x] sum
-  + [x] roman
+  + [x] `sum<num, num> -> num`
+  + [x] `roman<num | string> -> num | string`
   + [ ] convert
   + [ ] solve
   + [ ] ???
