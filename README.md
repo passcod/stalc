@@ -442,6 +442,7 @@ State: Spec
   + [ ] Commands: definitions
   + [x] Modes: reverse
   + [x] Run: as interactive shell
+  + [ ] Runtime: interpreter
 - Inputs:
   + [x] Integers: natural
   + [x] Integers: signed
@@ -607,6 +608,8 @@ State: Predraft
   + [ ] Modes: terse, dc-compatible
   + [ ] Multiple stacks (registers)
   + [ ] Persistent stacks
+  + [ ] Runtime: JIT
+  + [ ] Runtime: compiler ?
 - Inputs:
   + [ ] Dates: YY-MM-DD ?
   + [ ] Dates: Non-ISO ?
