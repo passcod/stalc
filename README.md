@@ -1,23 +1,26 @@
 # Stalc
 
-_Stack-based CLI calculator._
+_Stack-based terminal calculator._
 
 In the manner of [dc] but with advanced features and friendlier syntax.
 
 - [ ] First-class support for dates/times and durations
-- [ ] Unicode and non-Western number systems
 - [ ] Unit and currency conversion
 - [ ] Arbitrary-precision arithmetic
 - [ ] Complex numbers
 - [ ] Bases from 2 to 64
+- [ ] Variables for simpler usage than registers
 - [ ] History and lookup
-- [ ] Simple equation solver
+
+Future features:
+
+- [ ] Reverse-polish by default, but with Polish and Infix modes as options
 - [ ] Multiple registers
 - [ ] Persistent registers
-- [ ] Variables for simpler usage than registers
-- [ ] Reverse-polish by default, but with Polish and Infix modes as options
-- [ ] Linux, Mac, Windows, and more
 - [ ] Optional [dc]-compatible terse syntax
+- [ ] Linux, Mac, Windows, and more
+- [ ] Unicode and non-Western number systems
+- [ ] Simple equation solver
 
 [dc]: https://en.wikipedia.org/wiki/dc_(computer_program)
 
@@ -438,8 +441,7 @@ State: Spec
   + [x] Commands: arguments
   + [ ] Commands: definitions
   + [x] Modes: reverse
-  + [x] Modes: polish
-  + [x] Modes: infix
+  + [x] Run: as interactive shell
 - Inputs:
   + [x] Integers: natural
   + [x] Integers: signed
@@ -482,8 +484,6 @@ State: Spec
   + [ ] Core (native impl)
   + [ ] Stdlib (written in Stalc)
   + [ ] Types
-  + [ ] Types: of inputs
-  + [ ] Types: of outputs
   + [x] Variables: global
 - Core:
   + [x] `push<any> -> any` (does nothing when used on a stack directly)
@@ -524,7 +524,12 @@ State: Spec
 State: Predraft
 
 - Big picture:
+  + [x] Modes: polish
+  + [x] Modes: infix
   + [ ] Modes: terse
+  + [x] Run: from file
+  + [x] Run: from line
+  + [x] Run: from pipe
 - Inputs:
   + [x] Dates: YYYY-WNN-N
   + [x] Dates: YYYY-WNN
@@ -542,14 +547,14 @@ State: Predraft
 - Shell features:
   + [ ] History: whole line lookup
 
-### Types (0.2)
+### Advanced Types (0.2)
 
 State: Predraft
 
 - Commands:
-  + [ ] Types
-  + [ ] Types: of inputs
-  + [ ] Types: of outputs
+  + [ ] Types: enforced
+  + [ ] Types: derived
+  + [ ] Types: hierarchy
 - Core:
   + [ ] `cast<any, string> -> any` (alias `::`)
   + [ ] `typeof<any> -> string`
@@ -560,7 +565,7 @@ State: Predraft
   + [ ] `to_date`
   + [ ] `to_time`
 
-### History (0.3)
+### Advanced History (0.3)
 
 State: Predraft
 
@@ -569,7 +574,7 @@ State: Predraft
   + [ ] History: partial lookup
   + [ ] History: persistent
 
-### Numerals, part I (0.4)
+### Advanced Numerals, part I (0.4)
 
 State: Predraft
 
@@ -601,6 +606,7 @@ State: Predraft
 - Big picture:
   + [ ] Modes: terse, dc-compatible
   + [ ] Multiple stacks (registers)
+  + [ ] Persistent stacks
 - Inputs:
   + [ ] Dates: YY-MM-DD ?
   + [ ] Dates: Non-ISO ?
@@ -615,6 +621,10 @@ State: Predraft
 - Commands:
   + [ ] Stdlib (optimised versions)
   + [ ] Variables: scoped
+- Core:
+  + [ ] I/O: files
+  + [ ] I/O: stdin
+  + [ ] I/O: net
 - Stdlib:
   + [ ] convert
   + [ ] solve
