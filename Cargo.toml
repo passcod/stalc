@@ -1,6 +1,8 @@
 [package]
+authors = ["Félix Saparelli <felix@passcod.name>"]
 name = "stalc"
 version = "0.0.0"
-authors = ["Félix Saparelli <felix@passcod.name>"]
 
 [dependencies]
+nom = "3.0.0"
+num = "0.1.37"

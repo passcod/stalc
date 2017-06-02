@@ -522,10 +522,10 @@ isset("pi") //=> false
 
 #### Implementation
 
-Parser:
-  + [ ] Integers: natural
-  + [ ] Integers: signed
-  + [ ] Decimals: natural + signed
+- Parser:
+  + [x] Integers: natural
+  + [x] Integers: signed
+  + [x] Decimals: natural + signed
   + [ ] Decimals: without leading zero
   + [ ] Exponential notation
   + [ ] Complex numbers
@@ -579,6 +579,7 @@ State: Predraft
   + [x] Run: from line
   + [x] Run: from pipe
 - Inputs:
+  + [ ] Integers: comma as decimal separator
   + [x] Dates: YYYY-WNN-N
   + [x] Dates: YYYY-WNN
   + [x] Dates: YYYY-OOO
