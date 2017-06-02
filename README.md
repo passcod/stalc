@@ -433,7 +433,7 @@ isset("pi") //=> false
 
 ### Basics (0.0)
 
-State: Spec
+#### Spec progress
 
 - Big picture:
   + [x] Separator: Unicode whitespace class
@@ -519,6 +519,53 @@ State: Spec
   + [ ] Set/get
 - Platforms:
   + [x] First-tier (dev): Linux 64-bit
+
+#### Implementation
+
+Parser:
+  + [ ] Integers: natural
+  + [ ] Integers: signed
+  + [ ] Decimals: natural + signed
+  + [ ] Decimals: without leading zero
+  + [ ] Exponential notation
+  + [ ] Complex numbers
+  + [ ] Complex numbers: short form, signed
+  + [ ] Complex numbers: short form, unsigned
+  + [ ] Dates: YYYY-MM-DD
+  + [ ] Times: HH:MM:SS
+  + [ ] Times: MM:SS
+  + [ ] Times: MM:SS (with MM > 59)
+  + [ ] Times: HH:MM:SS (with HH > 23)
+  + [ ] Times: signed
+  + [ ] Times: with decimal seconds
+  + [ ] Times: are also durations
+  + [ ] Datetimes: (any date format)T(any time format within time bounds)
+  + [ ] Datetimes: with numeric timezone
+  + [ ] ISO Durations: full form
+  + [ ] ISO Durations: short form
+  + [ ] ISO Durations: signed
+  + [ ] ISO Durations: datetime form
+  + [ ] ISO Durations: datetime form, signed
+  + [ ] Bases: NNN_B
+  + [ ] Bases: bases under 37 are case-insensitive
+  + [ ] Bases: bases 37 and over are case-sensitive
+  + [ ] Bases: maximum radix is 64
+  + [ ] Bases: unofficial radix-1 using `1` as the single digit
+  + [ ] Numerals: Western (0 1 2 3 4 5 6 7 8 9)
+  + [ ] Strings: on one line
+  + [ ] Strings: multiline
+  + [ ] Strings: quote escape
+  + [ ] Strings: backslash escape
+  + [ ] Comments: whole line
+  + [ ] Comments: partial line
+  + [ ] Comments: multiline (through strings)
+  + [ ] Booleans
+  + [ ] Commands: bare
+  + [ ] Commands: with arguments
+  + [ ] Commands: with empty argument list
+  + [ ] Commands: bare nested within arguments
+  + [ ] Commands: argumented nested within arguments
+  + [ ] Commands: test with ~5 levels of nesting
 
 ### Useful extras (0.1)
 
