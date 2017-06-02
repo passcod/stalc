@@ -54,18 +54,13 @@ struct Number {
     pub decimal: BigUint,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-enum Lexed {
-    Number(Number)
-}
-
-impl Lexed {
-    fn parse_number(tup: (Sign, Vec<u32>, Option<Vec<u32>>)) -> Lexed {
-        Lexed::Number(Number {
-            sign: tup.0,
-            whole: BigUint::new(tup.1),
-            decimal: BigUint::new(tup.2.unwrap_or(vec![]))
-        })
+impl Number {
+    fn parse(sign: Sign, whole: Vec<u32>, decimal: Vec<u32>) -> Self {
+        Self {
+            sign,
+            whole: BigUint::new(whole),
+            decimal: BigUint::new(decimal)
+        }
     }
 
     fn parse_digit(digit: char) -> u32 {
@@ -84,32 +79,47 @@ impl Lexed {
     }
 }
 
-named!(number<Lexed>, map!(
-    do_parse!(
-        sign: map!(opt!(alt!(
-              one_of!("+")
-            | one_of!("-")
-        )), Lexed::parse_sign) >>
-        whole: many1!(map!(
-            one_of!("0123456789"),
-            Lexed::parse_digit
-        )) >>
+#[derive(Debug, PartialEq, Eq)]
+enum Type {
+    Number(Number)
+}
+
+named!(sign<Sign>, map!(opt!(alt!(
+      one_of!("+")
+    | one_of!("-")
+)), Number::parse_sign));
+
+named!(digits<Vec<u32> >, many1!(map!(
+    one_of!("0123456789"),
+    Number::parse_digit
+)));
+
+named!(number<Number>, alt!(
+    map!(do_parse!(
+        sign: sign >>
+        whole: digits >>
         decimal: opt!(do_parse!(
             dot: tag!(".") >>
-            digits: many1!(map!(
-                one_of!("0123456789"),
-                Lexed::parse_digit
-            )) >>
+            digits: digits >>
             (digits)
         )) >>
         (sign, whole, decimal)
-    ),
-    Lexed::parse_number
+    ), |tup: (Sign, Vec<u32>, Option<Vec<u32>>)| {
+        Number::parse(tup.0, tup.1, tup.2.unwrap_or(vec![]))
+    })
+  | map!(do_parse!(
+        sign: sign >>
+        dot: tag!(".") >>
+        decimal: digits >>
+        (sign, decimal)
+    ), |tup: (Sign, Vec<u32>)| {
+        Number::parse(tup.0, vec![], tup.1)
+    })
 ));
 
-named!(stalc<&[u8], Vec<Lexed> >,
+named!(stalc<&[u8], Vec<Type> >,
     many0!(
-        uws!(number)
+        uws!(map!(number, |n| { Type::Number(n) }))
     )
 );
 

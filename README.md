@@ -526,7 +526,7 @@ isset("pi") //=> false
   + [x] Integers: natural
   + [x] Integers: signed
   + [x] Decimals: natural + signed
-  + [ ] Decimals: without leading zero
+  + [x] Decimals: without leading zero
   + [ ] Exponential notation
   + [ ] Complex numbers
   + [ ] Complex numbers: short form, signed
