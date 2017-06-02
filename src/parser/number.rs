@@ -65,3 +65,100 @@ named!(pub number<Number>, alt!(
         Number::parse(tup.0, vec![], tup.1)
     })
 ));
+
+#[cfg(test)]
+mod test {
+    use nom::{ErrorKind, IResult, Needed};
+    use num::BigUint;
+    use num::bigint::Sign;
+    use super::{number, Number};
+
+    named!(spaced_number<Number>, ws!(number));
+
+    #[test]
+    fn natural() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::NoSign,
+                whole: BigUint::new(vec![1, 2, 4, 0, 7]),
+                decimal: BigUint::new(vec![])
+            }),
+            spaced_number("12407 ".as_bytes())
+        )
+    }
+
+    #[test]
+    fn decimal() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::NoSign,
+                whole: BigUint::new(vec![1, 2, 4]),
+                decimal: BigUint::new(vec![0, 7])
+            }),
+            number("124.07".as_bytes())
+        )
+    }
+
+    #[test]
+    fn negative_decimal() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::Minus,
+                whole: BigUint::new(vec![1, 2, 4]),
+                decimal: BigUint::new(vec![0, 7])
+            }),
+            number("-124.07".as_bytes())
+        )
+    }
+
+    #[test]
+    fn positive_decimal() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::Plus,
+                whole: BigUint::new(vec![1, 2, 4]),
+                decimal: BigUint::new(vec![0, 7])
+            }),
+            number("+124.07".as_bytes())
+        )
+    }
+
+    #[test]
+    fn bare_decimal() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::NoSign,
+                whole: BigUint::new(vec![]),
+                decimal: BigUint::new(vec![3, 9, 2, 6])
+            }),
+            number(".3926".as_bytes())
+        )
+    }
+
+    #[test]
+    fn negative_bare_decimal() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::Minus,
+                whole: BigUint::new(vec![]),
+                decimal: BigUint::new(vec![3, 9, 2, 6])
+            }),
+            number("-.3926".as_bytes())
+        )
+    }
+
+    #[test]
+    fn positive_bare_decimal() {
+        assert_eq!(
+            IResult::Done(&[][..], Number {
+                sign: Sign::Plus,
+                whole: BigUint::new(vec![]),
+                decimal: BigUint::new(vec![3, 9, 2, 6])
+            }),
+            number("+.3926".as_bytes())
+        )
+    }
+
+    // TODO: test cases for various failures
+    // e.g. `-.`, `123.`, `12-.`, `123.-12`, ``, `$$$`
+}
