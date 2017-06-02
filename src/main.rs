@@ -81,12 +81,13 @@ impl Number {
 
 #[derive(Debug, PartialEq, Eq)]
 enum Type {
-    Number(Number)
+    Number(Number),
+    Boolean(bool)
 }
 
 named!(sign<Sign>, map!(opt!(alt!(
-      one_of!("+")
-    | one_of!("-")
+    one_of!("+")
+  | one_of!("-")
 )), Number::parse_sign));
 
 named!(digits<Vec<u32> >, many1!(map!(
@@ -117,9 +118,23 @@ named!(number<Number>, alt!(
     })
 ));
 
+named!(boolean<bool>, map!(alt!(
+    tag!("true")
+  | tag!("false")
+), |b| {
+    match str::from_utf8(b).unwrap() {
+        "true" => true,
+        "false" => false,
+        _ => unreachable!()
+    }
+}));
+
 named!(stalc<&[u8], Vec<Type> >,
     many0!(
-        uws!(map!(number, |n| { Type::Number(n) }))
+        uws!(alt!(
+            map!(boolean, |b| { Type::Boolean(b) })
+          | map!(number, |n| { Type::Number(n) })
+        ))
     )
 );
 

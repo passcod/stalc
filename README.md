@@ -559,7 +559,7 @@ isset("pi") //=> false
   + [ ] Comments: whole line
   + [ ] Comments: partial line
   + [ ] Comments: multiline (through strings)
-  + [ ] Booleans
+  + [x] Booleans
   + [ ] Commands: bare
   + [ ] Commands: with arguments
   + [ ] Commands: with empty argument list
