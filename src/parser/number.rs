@@ -223,6 +223,43 @@ mod test {
         )
     }
 
-    // TODO: test cases for various failures
-    // e.g. `-.`, `123.`, `12-.`, `123.-12`, ``, `$$$`, `++12`
+    #[test]
+    fn invalid_trailing_sign_dot() {
+        assert_eq!(
+            IResult::Error(ErrorKind::Eof),
+            number("2816+.")
+        )
+    }
+
+    #[test]
+    fn invalid_sign_on_decimal() {
+        assert_eq!(
+            IResult::Error(ErrorKind::Eof),
+            number("19263.-920")
+        )
+    }
+
+    #[test]
+    fn invalid_double_sign() {
+        assert_eq!(
+            IResult::Error(ErrorKind::Alt),
+            number("++09826")
+        )
+    }
+
+    #[test]
+    fn invalid_garbage() {
+        assert_eq!(
+            IResult::Error(ErrorKind::Alt),
+            number("$$%@")
+        )
+    }
+
+    #[test]
+    fn empty() {
+        assert_eq!(
+            IResult::Incomplete(Needed::Size(1)),
+            number("")
+        )
+    }
 }
