@@ -1,4 +1,4 @@
-use self::whitespace::space;
+use self::whitespace::{is_whitespace, not_whitespace};
 
 mod boolean;
 mod number;
@@ -10,19 +10,15 @@ pub enum Type {
     Boolean(bool)
 }
 
-macro_rules! uws (
-  ($i:expr, $($args:tt)*) => (
-    {
-      sep!($i, space, $($args)*)
-    }
-  )
-);
+named!(token(&str) -> Type, alt_complete!(
+    map!(boolean::boolean, |b| { Type::Boolean(b) })
+  | map!(number::number, |n| { Type::Number(n) })
+));
 
-named!(pub stalc<&[u8], Vec<Type> >,
-    many0!(
-        uws!(alt!(
-            map!(boolean::boolean, |b| { Type::Boolean(b) })
-          | map!(number::number, |n| { Type::Number(n) })
-        ))
+named!(pub stalc(&str) -> Vec<Type>, many0!(
+    do_parse!(
+        token: flat_map!(take_while_s!(not_whitespace), token) >>
+        take_while_s!(is_whitespace) >>
+        (token)
     )
-);
+));

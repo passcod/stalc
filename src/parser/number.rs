@@ -1,24 +1,20 @@
-use num::BigUint;
+use nom::{ErrorKind, IResult};
 use num::bigint::Sign;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Number {
     pub sign: Sign,
-    pub whole: BigUint,
-    pub decimal: BigUint,
+    pub whole: String,
+    pub decimal: String,
 }
 
 impl Number {
-    pub fn parse(sign: Sign, whole: Vec<u32>, decimal: Vec<u32>) -> Self {
+    pub fn parse(sign: Sign, whole: &str, decimal: &str) -> Self {
         Self {
             sign,
-            whole: BigUint::new(whole),
-            decimal: BigUint::new(decimal)
+            whole: whole.into(),
+            decimal: decimal.into(),
         }
-    }
-
-    pub fn parse_digit(digit: char) -> u32 {
-        digit.to_digit(10).unwrap()
     }
 
     pub fn parse_sign(sign: Option<char>) -> Sign {
@@ -33,132 +29,200 @@ impl Number {
     }
 }
 
-named!(pub sign<Sign>, map!(opt!(alt!(
+named!(pub sign(&str) -> Sign, map!(opt!(alt!(
     one_of!("+")
   | one_of!("-")
 )), Number::parse_sign));
 
-named!(pub digits<Vec<u32> >, many1!(map!(
-    one_of!("0123456789"),
-    Number::parse_digit
-)));
+named!(pub digits(&str) -> &str, is_a_s!("0123456789"));
 
-named!(pub number<Number>, alt!(
-    map!(do_parse!(
-        sign: sign >>
-        whole: digits >>
-        decimal: opt!(do_parse!(
-            dot: tag!(".") >>
-            digits: digits >>
-            (digits)
-        )) >>
-        (sign, whole, decimal)
-    ), |tup: (Sign, Vec<u32>, Option<Vec<u32>>)| {
-        Number::parse(tup.0, tup.1, tup.2.unwrap_or(vec![]))
-    })
-  | map!(do_parse!(
-        sign: sign >>
-        dot: tag!(".") >>
-        decimal: digits >>
-        (sign, decimal)
-    ), |tup: (Sign, Vec<u32>)| {
-        Number::parse(tup.0, vec![], tup.1)
-    })
-));
+pub fn digits_non_empty(d: &str) -> IResult<&str, &str> {
+    if d.len() == 0 {
+        IResult::Error(ErrorKind::Eof)
+    } else {
+        digits(d)
+    }
+}
+
+named!(pub number(&str) -> Number, map!(do_parse!(
+    sign: sign >>
+    rational: alt_complete!(
+        map!(do_parse!(
+            dot: tag_s!(".") >>
+            decimal: digits_non_empty >>
+            (decimal)
+        ), |decimal| {
+            ("", decimal)
+        })
+      | do_parse!(
+            whole: digits_non_empty >>
+            dot: tag_s!(".") >>
+            decimal: digits >>
+            (whole, decimal)
+        )
+      | map!(digits_non_empty, |whole| {
+            (whole, "")
+        })
+    ) >>
+    eof!() >>
+    (sign, rational)
+), |tup: (Sign, (&str, &str))| {
+    Number::parse(tup.0, (tup.1).0, (tup.1).1)
+}));
 
 #[cfg(test)]
 mod test {
     use nom::{ErrorKind, IResult, Needed};
-    use num::BigUint;
-    use num::bigint::Sign;
-    use super::{number, Number};
-
-    named!(spaced_number<Number>, ws!(number));
+    use super::{number, Number, Sign};
 
     #[test]
     fn natural() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::NoSign,
-                whole: BigUint::new(vec![1, 2, 4, 0, 7]),
-                decimal: BigUint::new(vec![])
+                whole: "12407".into(),
+                decimal: "".into()
             }),
-            spaced_number("12407 ".as_bytes())
+            number("12407")
         )
     }
 
     #[test]
     fn decimal() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::NoSign,
-                whole: BigUint::new(vec![1, 2, 4]),
-                decimal: BigUint::new(vec![0, 7])
+                whole: "124".into(),
+                decimal: "07".into()
             }),
-            number("124.07".as_bytes())
+            number("124.07")
         )
     }
 
     #[test]
     fn negative_decimal() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::Minus,
-                whole: BigUint::new(vec![1, 2, 4]),
-                decimal: BigUint::new(vec![0, 7])
+                whole: "124".into(),
+                decimal: "07".into()
             }),
-            number("-124.07".as_bytes())
+            number("-124.07")
         )
     }
 
     #[test]
     fn positive_decimal() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::Plus,
-                whole: BigUint::new(vec![1, 2, 4]),
-                decimal: BigUint::new(vec![0, 7])
+                whole: "124".into(),
+                decimal: "07".into()
             }),
-            number("+124.07".as_bytes())
+            number("+124.07")
         )
     }
 
     #[test]
     fn bare_decimal() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::NoSign,
-                whole: BigUint::new(vec![]),
-                decimal: BigUint::new(vec![3, 9, 2, 6])
+                whole: "".into(),
+                decimal: "3926".into()
             }),
-            number(".3926".as_bytes())
+            number(".3926")
         )
     }
 
     #[test]
     fn negative_bare_decimal() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::Minus,
-                whole: BigUint::new(vec![]),
-                decimal: BigUint::new(vec![3, 9, 2, 6])
+                whole: "".into(),
+                decimal: "3926".into()
             }),
-            number("-.3926".as_bytes())
+            number("-.3926")
         )
     }
 
     #[test]
     fn positive_bare_decimal() {
         assert_eq!(
-            IResult::Done(&[][..], Number {
+            IResult::Done("", Number {
                 sign: Sign::Plus,
-                whole: BigUint::new(vec![]),
-                decimal: BigUint::new(vec![3, 9, 2, 6])
+                whole: "".into(),
+                decimal: "3926".into()
             }),
-            number("+.3926".as_bytes())
+            number("+.3926")
+        )
+    }
+
+    #[test]
+    fn integer_with_leading_zeroes() {
+        assert_eq!(
+            IResult::Done("", Number {
+                sign: Sign::NoSign,
+                whole: "003926".into(),
+                decimal: "".into()
+            }),
+            number("003926")
+        )
+    }
+
+    #[test]
+    fn decimal_with_leading_zeroes() {
+        assert_eq!(
+            IResult::Done("", Number {
+                sign: Sign::NoSign,
+                whole: "0".into(),
+                decimal: "003926".into()
+            }),
+            number("0.003926")
+        )
+    }
+
+    #[test]
+    fn trailing_dot() {
+        assert_eq!(
+            IResult::Done("", Number {
+                sign: Sign::NoSign,
+                whole: "3926".into(),
+                decimal: "".into()
+            }),
+            number("3926.")
+        )
+    }
+
+    #[test]
+    fn large_number() {
+        assert_eq!(
+            IResult::Done("", Number {
+                sign: Sign::NoSign,
+                whole: "2332428689328745932478943876394748356278545678928732409236889784596839084269459887432568783425".into(),
+                decimal: "762489423675687397834274327568932457632856874683988987563257648239867843257684938587365425".into()
+            }),
+            number("2332428689328745932478943876394748356278545678928732409236889784596839084269459887432568783425.762489423675687397834274327568932457632856874683988987563257648239867843257684938587365425")
+        )
+    }
+
+    #[test]
+    fn invalid_sign_dot() {
+        assert_eq!(
+            IResult::Error(ErrorKind::Alt),
+            number("-.")
+        )
+    }
+
+    #[test]
+    fn invalid_trailing_sign() {
+        assert_eq!(
+            IResult::Error(ErrorKind::Eof),
+            number("927-")
         )
     }
 
     // TODO: test cases for various failures
-    // e.g. `-.`, `123.`, `12-.`, `123.-12`, ``, `$$$`
+    // e.g. `-.`, `123.`, `12-.`, `123.-12`, ``, `$$$`, `++12`
 }

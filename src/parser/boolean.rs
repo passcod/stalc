@@ -1,10 +1,10 @@
 use std::str;
 
-named!(pub boolean<bool>, map!(alt!(
-    tag!("true")
-  | tag!("false")
+named!(pub boolean(&str) -> bool, map!(alt_complete!(
+    tag_s!("true")
+  | tag_s!("false")
 ), |b| {
-    match str::from_utf8(b).unwrap() {
+    match b {
         "true" => true,
         "false" => false,
         _ => unreachable!()
@@ -19,16 +19,16 @@ mod test {
     #[test]
     fn true_() {
         assert_eq!(
-            IResult::Done(&[][..], true),
-            boolean("true".as_bytes())
+            IResult::Done("", true),
+            boolean("true")
         );
     }
 
     #[test]
     fn false_() {
         assert_eq!(
-            IResult::Done(&[][..], false),
-            boolean("false".as_bytes())
+            IResult::Done("", false),
+            boolean("false")
         );
     }
 
@@ -36,15 +36,15 @@ mod test {
     fn invalid() {
         assert_eq!(
             IResult::Error(ErrorKind::Alt),
-            boolean("invalid".as_bytes())
+            boolean("invalid")
         );
     }
 
     #[test]
     fn empty() {
         assert_eq!(
-            IResult::Incomplete(Needed::Size(4)),
-            boolean("".as_bytes())
+            IResult::Incomplete(Needed::Size(5)),
+            boolean("")
         );
     }
 }

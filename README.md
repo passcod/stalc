@@ -446,6 +446,7 @@ isset("pi") //=> false
 - Inputs:
   + [x] Integers: natural
   + [x] Integers: signed
+  + [x] Integers: with trailing dot
   + [x] Decimals: natural + signed
   + [x] Decimals: without leading zero
   + [x] Exponential notation
@@ -467,7 +468,7 @@ isset("pi") //=> false
   + [ ] ISO Durations: signed
   + [x] ISO Durations: datetime form
   + [ ] ISO Durations: datetime form, signed
-  + [x] Bases: NNN_B
+  + [x] Bases: NNN\_B
   + [x] Bases: bases under 37 are case-insensitive
   + [x] Bases: bases 37 and over are case-sensitive
   + [x] Bases: maximum radix is 64
@@ -546,7 +547,7 @@ isset("pi") //=> false
   + [ ] ISO Durations: signed
   + [ ] ISO Durations: datetime form
   + [ ] ISO Durations: datetime form, signed
-  + [ ] Bases: NNN_B
+  + [ ] Bases: NNN\_B
   + [ ] Bases: bases under 37 are case-insensitive
   + [ ] Bases: bases 37 and over are case-sensitive
   + [ ] Bases: maximum radix is 64
