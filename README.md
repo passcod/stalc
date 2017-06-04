@@ -528,11 +528,9 @@ isset("pi") //=> false
   + [x] Integers: signed
   + [x] Decimals: natural + signed
   + [x] Decimals: without leading zero
-  + [ ] Exponential notation
-  + [ ] Complex numbers
-  + [ ] Complex numbers: short form, signed
-  + [ ] Complex numbers: short form, unsigned
-  + [ ] Dates: YYYY-MM-DD
+  + [x] Dates: YYYY-MM-DD
+  + [ ] Datetimes: (any date format)T(any time format within time bounds)
+  + [ ] Datetimes: with numeric timezone
   + [ ] Times: HH:MM:SS
   + [ ] Times: MM:SS
   + [ ] Times: MM:SS (with MM > 59)
@@ -540,8 +538,6 @@ isset("pi") //=> false
   + [ ] Times: signed
   + [ ] Times: with decimal seconds
   + [ ] Times: are also durations
-  + [ ] Datetimes: (any date format)T(any time format within time bounds)
-  + [ ] Datetimes: with numeric timezone
   + [ ] ISO Durations: full form
   + [ ] ISO Durations: short form
   + [ ] ISO Durations: signed
@@ -552,7 +548,7 @@ isset("pi") //=> false
   + [ ] Bases: bases 37 and over are case-sensitive
   + [ ] Bases: maximum radix is 64
   + [ ] Bases: unofficial radix-1 using `1` as the single digit
-  + [ ] Numerals: Western (0 1 2 3 4 5 6 7 8 9)
+  + [x] Numerals: Western (0 1 2 3 4 5 6 7 8 9)
   + [ ] Strings: on one line
   + [ ] Strings: multiline
   + [ ] Strings: quote escape
@@ -580,7 +576,11 @@ State: Predraft
   + [x] Run: from line
   + [x] Run: from pipe
 - Inputs:
-  + [ ] Integers: comma as decimal separator
+  + [ ] Numbers: comma as decimal separator
+  + [ ] Numbers: xponential notation
+  + [ ] Numbers: complex
+  + [ ] Numbers: complex, short form, signed
+  + [ ] Numbers: complex, short form, unsigned
   + [x] Dates: YYYY-WNN-N
   + [x] Dates: YYYY-WNN
   + [x] Dates: YYYY-OOO
@@ -659,6 +659,7 @@ State: Predraft
   + [ ] Persistent stacks
   + [ ] Runtime: JIT
   + [ ] Runtime: compiler ?
+  + [ ] Exact recomputation
 - Inputs:
   + [ ] Dates: YY-MM-DD ?
   + [ ] Dates: Non-ISO ?
