@@ -1,22 +1,26 @@
 use num::bigint::Sign;
-use super::numeral::{decimal, decimals, decimals_ne, digits, digits_ne};
+use num::rational::BigRational;
+use super::numeral::{decimal, decimals, decimals_ne, digits, digits_ne, parse_str_radix};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Number {
     pub sign: Sign,
-    pub integer: String,
-    pub fractional: String,
+    pub rational: BigRational,
+    pub debug: String,
     pub radix: u8,
 }
 
 impl Number {
-    pub fn parse(sign: Sign, integer: String, fractional: String, radix: u8) -> Self {
-        Self {
+    pub fn parse(sign: Sign, integer: String, fractional: String, radix: u8) -> Result<Self, String> {
+        let rational = parse_str_radix(integer, fractional, radix)?;
+        let debug = format!("{}", rational);
+
+        Ok(Self {
             sign,
-            integer,
-            fractional,
+            rational,
+            debug,
             radix
-        }
+        })
     }
 }
 
@@ -45,7 +49,7 @@ named!(pub radix(&str) -> u8, map!(do_parse!(
     rad.parse::<u8>().unwrap()
 }));
 
-named!(pub number(&str) -> Number, map!(do_parse!(
+named!(pub number(&str) -> Number, map_res!(do_parse!(
     sign: sign >>
     numerated: alt_complete!(
         // Radixed .123
