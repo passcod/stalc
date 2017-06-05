@@ -1,73 +1,104 @@
-use nom::{ErrorKind, IResult};
 use num::bigint::Sign;
+use super::numeral::{decimal, decimals, decimals_ne, digits, digits_ne};
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Number {
     pub sign: Sign,
-    pub whole: String,
-    pub decimal: String,
+    pub integer: String,
+    pub fractional: String,
+    pub radix: u8,
 }
 
 impl Number {
-    pub fn parse(sign: Sign, whole: &str, decimal: &str) -> Self {
+    pub fn parse(sign: Sign, integer: String, fractional: String, radix: u8) -> Self {
         Self {
             sign,
-            whole: whole.into(),
-            decimal: decimal.into(),
-        }
-    }
-
-    pub fn parse_sign(sign: Option<char>) -> Sign {
-        match sign {
-            None => Sign::NoSign,
-            Some(c) => match c {
-                '+' => Sign::Plus,
-                '-' => Sign::Minus,
-                _ => unreachable!()
-            }
+            integer,
+            fractional,
+            radix
         }
     }
 }
 
 named!(pub sign(&str) -> Sign, map!(opt!(alt!(
-    one_of!("+")
-  | one_of!("-")
-)), Number::parse_sign));
+    tag_s!("+")
+  | tag_s!("-")
+)), |sign: Option<&str>| {
+    sign.map(|s| match s {
+        "+" => Sign::Plus,
+        "-" => Sign::Minus,
+        _ => unreachable!()
+    }).unwrap_or(Sign::NoSign)
+}));
 
-named!(pub digits(&str) -> &str, is_a_s!("0123456789"));
+named!(pub radixpoint(&str) -> &str, alt!(
+    tag_s!(".")
+  | tag_s!(",")
+));
 
-pub fn digits_non_empty(d: &str) -> IResult<&str, &str> {
-    if d.len() == 0 {
-        IResult::Error(ErrorKind::Eof)
-    } else {
-        digits(d)
-    }
-}
+named!(pub radix(&str) -> u8, map!(do_parse!(
+    tag_s!("_") >>
+    r: many_m_n!(1, 2, decimal) >>
+    (r)
+), |r: Vec<char>| {
+    let rad: String = r.into_iter().collect();
+    rad.parse::<u8>().unwrap()
+}));
 
 named!(pub number(&str) -> Number, map!(do_parse!(
     sign: sign >>
-    rational: alt_complete!(
+    numerated: alt_complete!(
+        // Radixed .123
         map!(do_parse!(
-            dot: tag_s!(".") >>
-            decimal: digits_non_empty >>
-            (decimal)
-        ), |decimal| {
-            ("", decimal)
-        })
-      | do_parse!(
-            whole: digits_non_empty >>
-            dot: tag_s!(".") >>
-            decimal: digits >>
-            (whole, decimal)
-        )
-      | map!(digits_non_empty, |whole| {
-            (whole, "")
-        })
+            radixpoint >>
+            fractional: digits_ne >>
+            radix: radix >>
+            (fractional, radix)
+        ), |t: (&str, u8)| { (None, Some(t.0.into()), Some(t.1)) })
+
+        // Radixed 12.3 or 12.
+      | map!(do_parse!(
+            integer: digits_ne >>
+            radixpoint >>
+            fractional: digits >>
+            radix: radix >>
+            (integer, fractional, radix)
+        ), |t: (&str, &str, u8)| { (Some(t.0.into()), Some(t.1.into()), Some(t.2)) })
+
+        // Radixed 123
+      | map!(do_parse!(
+            integer: digits_ne >>
+            radix: radix >>
+            (integer, radix)
+        ), |t: (&str, u8)| { (Some(t.0.into()), None, Some(t.1)) })
+
+        // Radixless .123
+      | map!(do_parse!(
+            radixpoint >>
+            fractional: decimals_ne >>
+            (fractional)
+        ), |n: &str| { (None, Some(n.into()), None) })
+
+        // Radixless 12.3 or 12.
+      | map!(do_parse!(
+            integer: decimals_ne >>
+            radixpoint >>
+            fractional: decimals >>
+            (integer, fractional)
+        ), |t: (&str, &str)| { (Some(t.0.into()), Some(t.1.into()), None) })
+
+        // Radixless 123
+      | map!(decimals_ne, |n: &str| { (Some(n.into()), None, None) })
     ) >>
     eof!() >>
-    (sign, rational)
-), |tup: (Sign, (&str, &str))| {
-    Number::parse(tup.0, (tup.1).0, (tup.1).1)
+    (sign, numerated)
+), |tup: (Sign, (Option<String>, Option<String>, Option<u8>))| {
+    Number::parse(
+        tup.0,
+        (tup.1).0.unwrap_or("".into()),
+        (tup.1).1.unwrap_or("".into()),
+        (tup.1).2.unwrap_or(10)
+    )
 }));
 
 #[cfg(test)]

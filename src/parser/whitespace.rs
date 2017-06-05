@@ -1,6 +1,5 @@
-pub static WHITESPACE: [char; 26] = [
+pub static WHITESPACE: [char; 25] = [
     '\u{09}',
-    '\u{04}',
     '\u{0a}',
     '\u{0b}',
     '\u{0c}',

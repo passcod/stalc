@@ -471,7 +471,7 @@ isset("pi") //=> false
   + [x] Bases: NNN\_B
   + [x] Bases: bases under 37 are case-insensitive
   + [x] Bases: bases 37 and over are case-sensitive
-  + [x] Bases: maximum radix is 64
+  + [x] Bases: maximum radix is 62
   + [x] Bases: unofficial radix-1 using `1` as the single digit
   + [x] Numerals: Western (0 1 2 3 4 5 6 7 8 9)
   + [x] Strings: on one line
@@ -576,11 +576,11 @@ State: Predraft
   + [x] Run: from line
   + [x] Run: from pipe
 - Inputs:
-  + [ ] Numbers: comma as decimal separator
-  + [ ] Numbers: xponential notation
-  + [ ] Numbers: complex
-  + [ ] Numbers: complex, short form, signed
-  + [ ] Numbers: complex, short form, unsigned
+  + [x] Numbers: comma as decimal separator
+  + [x] Numbers: exponential notation
+  + [x] Numbers: complex
+  + [x] Numbers: complex, short form, signed
+  + [x] Numbers: complex, short form, unsigned
   + [x] Dates: YYYY-WNN-N
   + [x] Dates: YYYY-WNN
   + [x] Dates: YYYY-OOO
@@ -661,6 +661,9 @@ State: Predraft
   + [ ] Runtime: compiler ?
   + [ ] Exact recomputation
 - Inputs:
+  + [ ] Numbers: rational literals
+  + [ ] Numbers: factorial mixed radix
+  + [ ] Numbers: prime mixed radix
   + [ ] Dates: YY-MM-DD ?
   + [ ] Dates: Non-ISO ?
   + [ ] Dates: ISO short form ?

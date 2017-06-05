@@ -1,6 +1,8 @@
 use std::str;
 
-named!(pub boolean(&str) -> bool, map!(alt_complete!(
+pub type Boolean = bool;
+
+named!(pub boolean(&str) -> Boolean, map!(alt_complete!(
     tag_s!("true")
   | tag_s!("false")
 ), |b| {
