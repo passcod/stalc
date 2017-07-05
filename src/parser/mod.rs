@@ -14,6 +14,7 @@ pub enum Token {
     Command(String),
     Datetime(datetime::Datetime),
     Number(number::Number),
+    String(String)
 }
 
 fn flatten(vecovec: Vec<Vec<Token>>) -> Vec<Token> {
@@ -44,9 +45,23 @@ named!(token(&str) -> Vec<Token>, alt_complete!(
         |_| vec![Token::ArgumentListStop]
     )
 
-  | map!(terminated!(boolean::boolean, eof!()), |b| { vec![Token::Boolean(b)] })
-  | map!(terminated!(datetime::datetime, eof!()), |d| { vec![Token::Datetime(d)] })
-  | map!(terminated!(number::number, eof!()), |n| { vec![Token::Number(n)] })
+    // Strings
+  | map!(delimited!(
+        tag_s!("\""),
+        take_until_s!("\""),
+        do_parse!(
+            tag_s!("\"") >>
+            eof!() >>
+            ()
+        )
+    ), |t: &str| vec![
+        Token::String(t.into())
+    ])
+
+    // Literals
+  | map!(terminated!(boolean::boolean, eof!()), |t| vec![Token::Boolean(t)])
+  | map!(terminated!(datetime::datetime, eof!()), |t| vec![Token::Datetime(t)])
+  | map!(terminated!(number::number, eof!()), |t| vec![Token::Number(t)])
 
     // Command with opening argument list
   | map!(do_parse!(
@@ -63,8 +78,7 @@ named!(token(&str) -> Vec<Token>, alt_complete!(
   | map!(do_parse!(
         command: aname >>
         tag_s!("(") >>
-        any: flat_map!(aname, token) >>
-        eof!() >>
+        any: terminated!(token, eof!()) >>
         (command, any)
     ), |t: (&str, Vec<Token>)| both(vec![
         Token::Command(t.0.into()),
@@ -74,12 +88,15 @@ named!(token(&str) -> Vec<Token>, alt_complete!(
     // Command with unary argument list
   | map!(do_parse!(
         command: aname >>
-        any: delimited!(
-            tag_s!("("),
-            flat_map!(take_until_s!(")"), token),
-            tag_s!(")")
+        tag_s!("(") >>
+        any: terminated!(
+            token,
+            do_parse!(
+                tag_s!(")") >>
+                eof!() >>
+                ()
+            )
         ) >>
-        eof!() >>
         (command, any)
     ), |t: (&str, Vec<Token>)| flatten(vec![vec![
         Token::Command(t.0.into()),
